@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "/Users/hritiksapra/AndroidStudioProjects/ToiletFinder/app/build/intermediates/res/merged/debug/mipmap-xhdpi-v4/setpos.png",
+        "source": "/Users/hritiksapra/AndroidStudioProjects/ToiletFinder/app/src/main/res/mipmap-xhdpi/setpos.png"
+    },
+    {
+        "merged": "/Users/hritiksapra/AndroidStudioProjects/ToiletFinder/app/build/intermediates/res/merged/debug/mipmap-xhdpi-v4/ic_launcher.png",
+        "source": "/Users/hritiksapra/AndroidStudioProjects/ToiletFinder/app/src/main/res/mipmap-xhdpi/ic_launcher.png"
+    }
+]

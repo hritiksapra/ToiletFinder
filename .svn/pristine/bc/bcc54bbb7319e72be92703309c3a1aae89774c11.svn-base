@@ -1,0 +1,107 @@
+package com.cstep.ToiletFinder;
+
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RatingBar;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONObject;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+public class FormActivity extends AppCompatActivity {
+    EditText editText;
+    double latitude;
+    double longitiude;
+    RatingBar ratingBar, ratingBar1;
+    Button submitbtn;
+    String name,email;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_form);
+        editText=(EditText) findViewById(R.id.editText);
+        ratingBar=(RatingBar) findViewById(R.id.ratingBar);
+        ratingBar1=(RatingBar) findViewById(R.id.ratingBar2);
+        submitbtn=(Button) findViewById(R.id.button);
+        Intent intent=getIntent();
+        Bundle extras = intent.getExtras();
+        if(extras != null) {
+            String address = extras.getString("Address");
+            editText.setText(address);
+            latitude = extras.getDouble("Latitude");
+            longitiude= extras.getDouble("Longitude");
+            name= extras.getString("Name");
+            email=extras.getString("Email");
+
+        }
+        submitbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new startUrl().execute("http://172.16.5.227:8084/ToiletFinderServer/resources/ToiletFinderServer/PostToiletInfo", Double.toString(latitude), Double.toString(longitiude), getHygieneRating(), getSafetyRating(), name, email );
+            }
+        });
+    }
+
+    public String getHygieneRating()
+    {
+        String rating;
+        rating=String.valueOf(ratingBar.getRating());
+        return rating;
+    }
+    public String getSafetyRating()
+    {
+        String rating;
+        rating=String.valueOf(ratingBar1.getRating());
+        return rating;
+    }
+
+}
+ class startUrl extends AsyncTask <String, Void , Void>
+{
+
+
+    @Override
+    protected Void doInBackground(String... params) {
+        HttpClient httpClient=new DefaultHttpClient();
+        HttpPost httpPost=new HttpPost(params[0]);
+        InputStream inputStream;
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("Latitude", params[1]);
+            jsonObject.put("Longitude", params[2]);
+            jsonObject.put("Hygiene", params[3]);
+            jsonObject.put("Safety", params[4]);
+            jsonObject.put("Name", params[5]);
+            jsonObject.put("Email", params[6]);
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+            nameValuePairs.add(new BasicNameValuePair("req", jsonObject.toString()));
+            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-type", "application/json");
+            HttpResponse httpResponse = httpClient.execute(httpPost);
+
+            // 9. receive response as inputStream
+            inputStream = httpResponse.getEntity().getContent();
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return null;
+    }
+}
